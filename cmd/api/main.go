@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/katsuikeda/recipean/internal/database"
@@ -48,8 +49,9 @@ func main() {
 	mux.HandleFunc("POST /api/v1/users", apiCfg.handlerCreateUser)
 
 	srv := &http.Server{
-		Addr:    addr,
-		Handler: mux,
+		Addr:              addr,
+		Handler:           mux,
+		ReadHeaderTimeout: time.Second * 10,
 	}
 
 	fmt.Printf("Listening to port: %s", port)
