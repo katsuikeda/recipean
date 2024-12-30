@@ -35,7 +35,6 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.WriteHeader(code)
 	if _, err := w.Write(data); err != nil {
 		log.Printf("Error writing response body: %v", err)
-		http.Error(w, `{"error": "Internal Server Error"}`, http.StatusInternalServerError)
 		return
 	}
 }
