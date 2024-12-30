@@ -14,7 +14,8 @@ import (
 )
 
 type apiConfig struct {
-	db *database.Queries
+	db       *database.Queries
+	platform string
 }
 
 func main() {
@@ -30,6 +31,10 @@ func main() {
 	if port == "" {
 		log.Fatal("PORT environment variable is not set")
 	}
+	platform := os.Getenv("PLATFORM")
+	if platform == "" {
+		log.Fatal("PLATFORM environment variable is not set")
+	}
 
 	dbConn, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -39,7 +44,8 @@ func main() {
 	dbQueries := database.New(dbConn)
 
 	apiCfg := &apiConfig{
-		db: dbQueries,
+		db:       dbQueries,
+		platform: platform,
 	}
 
 	addr := ":" + port
@@ -50,12 +56,14 @@ func main() {
 
 	mux.HandleFunc("POST /api/v1/users", apiCfg.handlerCreateUser)
 
+	mux.HandleFunc("POST /admin/reset", apiCfg.handlerReset)
+
 	srv := &http.Server{
 		Addr:              addr,
 		Handler:           mux,
 		ReadHeaderTimeout: time.Second * 10,
 	}
 
-	fmt.Printf("Listening to port: %s", port)
+	fmt.Printf("Listening to port: %s\n", port)
 	log.Fatal(srv.ListenAndServe())
 }

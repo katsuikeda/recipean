@@ -11,3 +11,6 @@ VALUES (
     $3
 )
 RETURNING *;
+
+-- name: DeleteAllUsers :exec
+DELETE FROM users;
